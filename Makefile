@@ -7,7 +7,7 @@ OBJECTS = $(CFILES:.c=.o)
 all: $(OUT)
 
 $(OUT): $(OBJECTS)
-	$(CC) $(OBJECTS) -o $(OUT)
+	$(CC) -lcurl $(OBJECTS) -o $(OUT)
     
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

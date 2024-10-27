@@ -1,49 +1,46 @@
 #include <guests.h>
 #include <string.h>
 #include <errno.h>
+#include <stdbool.h>
 
 Guest getGuest(const char* name) {
     Guest g;
     g.os = getOS(name);
     switch (g.os) {
-        case WIN1:
-            g.cpu_cores = 1; g.ram_size = 4;
-            g.hdd_url = "https://winksplorer.net/snbox/win1.qcow2";
-            break;
         case WIN3:
-            g.cpu_cores = 1; g.ram_size = 12;
+            g.cpu_cores = 1; g.ram_size = 16; g.amd64 = false; g.vga = STANDARD;
             g.hdd_url = "https://winksplorer.net/snbox/win3.qcow2";
             break;
         case WIN95:
-            g.cpu_cores = 1; g.ram_size = 32;
+            g.cpu_cores = 1; g.ram_size = 32; g.amd64 = false; g.vga = CIRRUS;
             g.hdd_url = "https://winksplorer.net/snbox/win95.qcow2";
             break;
         case WINNT4:
-            g.cpu_cores = 1; g.ram_size = 32;
+            g.cpu_cores = 1; g.ram_size = 32; g.amd64 = false; g.vga = CIRRUS;
             g.hdd_url = "https://winksplorer.net/snbox/winnt4.qcow2";
             break;
         case WIN2K:
-            g.cpu_cores = 1; g.ram_size = 256;
+            g.cpu_cores = 1; g.ram_size = 256; g.amd64 = false; g.vga = CIRRUS;
             g.hdd_url = "https://winksplorer.net/snbox/win2k.qcow2";
             break;
         case WINXP:
-            g.cpu_cores = 2; g.ram_size = 512;
+            g.cpu_cores = 2; g.ram_size = 512; g.amd64 = false; g.vga = CIRRUS;
             g.hdd_url = "https://winksplorer.net/snbox/winxp.qcow2";
             break;
         case WINVISTA:
-            g.cpu_cores = 2; g.ram_size = 512;
+            g.cpu_cores = 2; g.ram_size = 512; g.amd64 = true; g.vga = CIRRUS;
             g.hdd_url = "https://winksplorer.net/snbox/winvista.qcow2";
             break;
         case DEBIANBOOKWORM:
-            g.cpu_cores = 2; g.ram_size = 1024;
+            g.cpu_cores = 2; g.ram_size = 1024; g.amd64 = true; g.vga = VIRTIO;
             g.hdd_url = "https://winksplorer.net/snbox/debianbookworm.qcow2";
             break;
         case REACTOS:
-            g.cpu_cores = 1; g.ram_size = 512;
+            g.cpu_cores = 1; g.ram_size = 512; g.amd64 = false; g.vga = STANDARD;
             g.hdd_url = "https://winksplorer.net/snbox/reactos.qcow2";
             break;
         case OS2W4:
-            g.cpu_cores = 1; g.ram_size = 256;
+            g.cpu_cores = 1; g.ram_size = 256; g.amd64 = false; g.vga = STANDARD;
             g.hdd_url = "https://winksplorer.net/snbox/os2w4.qcow2";
             break;
         default:
@@ -55,9 +52,7 @@ Guest getGuest(const char* name) {
 }
 
 OperatingSystem getOS(const char* name) {
-    if (!strcmp(name, "win1")) return WIN1;
-
-    else if (!strcmp(name, "win3")) return WIN3;
+    if (!strcmp(name, "win3")) return WIN3;
 
     else if (!strcmp(name, "win95")) return WIN95;
 

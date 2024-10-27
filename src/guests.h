@@ -1,8 +1,9 @@
 #ifndef SNBOX_GUESTS_H
 #define SNBOX_GUESTS_H
 
+#include <stdbool.h>
+
 typedef enum OperatingSystem {
-    WIN1,
     WIN3,
     WIN95,
 
@@ -17,11 +18,21 @@ typedef enum OperatingSystem {
     NONE
 } OperatingSystem;
 
+typedef enum QemuVga {
+    STANDARD,
+    CIRRUS,
+    VMWARE,
+    QXL,
+    VIRTIO,
+} QemuVga;
+
 typedef struct Guest {
     enum OperatingSystem os;
     int ram_size;
     short cpu_cores;
     char* hdd_url;
+    enum QemuVga vga;
+    bool amd64;
 } Guest;
 
 Guest getGuest(const char* name);
