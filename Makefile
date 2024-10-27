@@ -1,5 +1,5 @@
 CC = clang
-CFLAGS = -O2 -Isrc
+CFLAGS = -O2 -Isrc -g
 OUT = snbox
 CFILES = $(shell find src -type f -name '*.c')
 OBJECTS = $(CFILES:.c=.o)
@@ -7,7 +7,7 @@ OBJECTS = $(CFILES:.c=.o)
 all: $(OUT)
 
 $(OUT): $(OBJECTS)
-	$(CC) -lcurl $(OBJECTS) -o $(OUT)
+	$(CC) -lcurl -larchive $(OBJECTS) -o $(OUT)
     
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

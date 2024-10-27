@@ -5,7 +5,6 @@
 
 typedef enum OperatingSystem {
     WIN3,
-    WIN95,
 
     WINNT4,
     WIN2K,
@@ -27,14 +26,16 @@ typedef enum QemuVga {
 } QemuVga;
 
 typedef struct Guest {
-    enum OperatingSystem os;
-    int ram_size;
-    short cpu_cores;
+    OperatingSystem os;
     char* hdd_url;
-    enum QemuVga vga;
+    short cpu_cores;
+    int ram_size;
     bool amd64;
+    enum QemuVga vga;
+    bool compressed_hdd;
 } Guest;
 
 Guest getGuest(const char* name);
 OperatingSystem getOS(const char* name);
+const char* osName(OperatingSystem os);
 #endif

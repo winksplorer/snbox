@@ -1,2 +1,5 @@
 snbox
 *.o
+*.qcow2
+.vscode
+*.qcow2.7z

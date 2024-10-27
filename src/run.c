@@ -25,30 +25,29 @@ void run(Guest g) {
             break;
     }
 
-    printf("b");
-
     snprintf(qemu_cmd, 20, "qemu-system-%s", g.amd64 ? "x86_64" : "i386");
 
-    char* argv[8];
+    char* argv[10];
 
-    //argv[0] = qemu_cmd;
+    argv[0] = qemu_cmd;
 
-    argv[0] = "-smp";
+    argv[1] = "-smp";
     char cores[2];
     snprintf(cores, 2, "%d", g.cpu_cores);
-    argv[1] = cores;
+    argv[2] = cores;
 
-    argv[2] = "-m";
+    argv[3] = "-m";
     char mem[5];
     snprintf(mem, 5, "%d", g.ram_size);
-    argv[3] = mem;
+    argv[4] = mem;
 
-    argv[4] = "-drive";
-    argv[5] = "file=snbox.qcow2,format=qcow2";
-    argv[6] = "-vga";
-    argv[7] = vga;
+    argv[5] = "-drive";
+    argv[6] = "file=snbox.qcow2,format=qcow2";
+    argv[7] = "-vga";
+    argv[8] = vga;
+    argv[9] = NULL;
 
-    printf("c %s\n", argv[4]);
+    printf("starting qemu");
     
     execvp(qemu_cmd, argv);
 }
