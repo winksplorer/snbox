@@ -42,8 +42,8 @@ int extract7z(const char *filename) {
     }
 
     while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-        char path[50];
-        snprintf(path, 50, "/home/%s/.snbox/%s", getUsername(), archive_entry_pathname(entry));
+        char path[100];
+        snprintf(path, 100, "/home/%s/.snbox/%s", getUsername(), archive_entry_pathname(entry));
         archive_entry_set_pathname(entry, path);
 
         r = archive_write_header(ext, entry);

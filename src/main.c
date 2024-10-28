@@ -24,14 +24,14 @@ int main(int argc, char* argv[]) {
         }
         printf("selected \"%s\"\n", osName(g.os));
 
-        char hdd_path[50];
+        char hdd_path[100];
         char* archive_path = malloc(50);
 
         // archive_path is the path to the compressed hdd, such as /tmp/haiku.qcow2.7z
         // hdd_path is the path to the UNcompressed (and cached) hdd, such as /home/wink/.snbox/haiku.qcow2
 
         snprintf(archive_path, 50, "/tmp/%s", getFilename(g.hdd_url));
-        snprintf(hdd_path, 50, "/home/%s/.snbox/%s", getUsername(), remove7zExt(getFilename(g.hdd_url)));
+        snprintf(hdd_path, 100, "/home/%s/.snbox/%s", getUsername(), remove7zExt(getFilename(g.hdd_url)));
 
         if (!access(archive_path, F_OK)) remove(archive_path);
         if (access(hdd_path, F_OK)) {
