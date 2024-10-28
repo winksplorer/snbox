@@ -4,16 +4,14 @@
 #include <stdbool.h>
 
 typedef enum OperatingSystem {
+    DOS5,
     WIN3,
 
     WINNT4,
     WIN2K,
     WINXP,
-    WINVISTA,
 
-    DEBIANBOOKWORM,
-    REACTOS,
-    OS2W4,
+    HAIKU,
     NONE
 } OperatingSystem;
 
@@ -26,13 +24,12 @@ typedef enum QemuVga {
 } QemuVga;
 
 typedef struct Guest {
-    OperatingSystem os;
-    char* hdd_url;
-    short cpu_cores;
-    int ram_size;
-    bool amd64;
-    enum QemuVga vga;
-    bool compressed_hdd;
+    OperatingSystem os; // OS
+    char* hdd_url; // URL to the compressed qcow2 image
+    short cpu_cores; // Amount of SMP CPU cores
+    int ram_size; // Memory size in MB
+    bool amd64; // x64 support
+    enum QemuVga vga; // Video card
 } Guest;
 
 Guest getGuest(const char* name);

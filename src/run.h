@@ -3,6 +3,6 @@
 
 #include <guests.h>
 
-void run(Guest g);
+void run(Guest g, const char* hdd);
 
 #endif

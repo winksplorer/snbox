@@ -1,8 +1,10 @@
 #include <extract.h>
 #include <archive.h>
 #include <archive_entry.h>
+#include <common.h>
 
-int copy_data(struct archive* ar, struct archive* aw) {
+/* Helper function for extract_7z. */
+int copyData(struct archive* ar, struct archive* aw) {
     const void* buff;
     size_t size;
     la_int64_t offset;
@@ -22,7 +24,8 @@ int copy_data(struct archive* ar, struct archive* aw) {
     }
 }
 
-int extract_7z(const char *filename) {
+/* Extracts a 7zip archive to ~/.snbox. */
+int extract7z(const char *filename) {
     struct archive_entry* entry;
 
     struct archive* a = archive_read_new();
@@ -39,11 +42,14 @@ int extract_7z(const char *filename) {
     }
 
     while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-        const char *currentFile = archive_entry_pathname(entry);
+        char path[50];
+        snprintf(path, 50, "/home/%s/.snbox/%s", getUsername(), archive_entry_pathname(entry));
+        archive_entry_set_pathname(entry, path);
+
         r = archive_write_header(ext, entry);
         if (r != ARCHIVE_OK) fprintf(stderr, "snbox: extraction error: header write failed: %s\n", archive_error_string(ext));
         else {
-            copy_data(a, ext);
+            copyData(a, ext);
             archive_write_finish_entry(ext);
         }
     }

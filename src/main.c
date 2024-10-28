@@ -5,12 +5,16 @@
 #include <run.h>
 #include <extract.h>
 #include <common.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <time.h>
 
+/* Entry point. */
 int main(int argc, char* argv[]) {
-    printf("snbox 0.3 (%s %s)\nmade by winksplorer, licensed under MPL-2.0\n\n", __DATE__, __TIME__);
+    printf("snbox 0.6 (%s %s)\nmade by winksplorer, licensed under MPL-2.0\n\n", __DATE__, __TIME__);
     createCacheFolder();
 
-    if (argc == 1) printf("usage: snbox [os]\nruns a pre-installed QEMU VM. With no [os], it will print this message.\npossible operaing systems:\n\nwin3    Microsoft Windows 3.1\nwinnt4  Microsoft Windows NT 4.0 Workstation SP1\nwin2k   Microsoft Windows 2000\nwinxp   Microsoft Windows XP Professional SP3\nvista   Microsoft Windows Vista Ultimate\ndeb12   Debian 12.7 Bookworm\nreactos ReactOS 0.4.14\nos/2    IBM OS/2 Warp 4.52\n");
+    if (argc == 1) printf("usage: snbox [os]\nruns a pre-installed QEMU VM. with no [os], it will print this message.\npossible operating systems:\n\ndos5    Microsoft MS-DOS 5.00\nwin3    Microsoft Windows 3.1\nwinnt4  Microsoft Windows NT 4.0 Workstation SP6\nwin2k   Microsoft Windows 2000 Professional SP4\nwinxp   Microsoft Windows XP Professional SP3 x86\nhaiku   Haiku OS r1beta5\n");
 
     else if (argc == 2) {
         Guest g = getGuest(argv[1]);
@@ -19,28 +23,44 @@ int main(int argc, char* argv[]) {
             return errno;
         }
         printf("selected \"%s\"\n", osName(g.os));
-        printf("%s", remove7zExt(getFilename(g.hdd_url)));
-        return 0;
 
-        if (g.compressed_hdd) {
-            if (downloadFile(g.hdd_url, "snbox.qcow2.7z")) {
+        char hdd_path[50];
+        char* archive_path = malloc(50);
+
+        // archive_path is the path to the compressed hdd, such as /tmp/haiku.qcow2.7z
+        // hdd_path is the path to the UNcompressed (and cached) hdd, such as /home/wink/.snbox/haiku.qcow2
+
+        snprintf(archive_path, 50, "/tmp/%s", getFilename(g.hdd_url));
+        snprintf(hdd_path, 50, "/home/%s/.snbox/%s", getUsername(), remove7zExt(getFilename(g.hdd_url)));
+
+        if (!access(archive_path, F_OK)) remove(archive_path);
+        if (access(hdd_path, F_OK)) {
+            // Download VM HDD
+            printf("downloading compressed hdd... ");
+            fflush(stdout);
+            // "before" is unix epoch, so we can time download speeds
+            unsigned long before = time(NULL);
+            if (downloadFile(g.hdd_url, archive_path)) {
                 perror("snbox: download failed");
                 return errno;
             }
-            printf("downloaded compressed hdd\n");
+            // measure amount of seconds since "before", use ANSI code 32m for green
+            printf("\033[32m%lus\033[0m\n", time(NULL)-before);
 
-            if (extract_7z("snbox.qcow2.7z")) {
+            // decompress VM HDD
+            printf("decompressing hdd... ");
+            fflush(stdout);
+            // "before" is unix epoch, so we can time download speeds
+            before = time(NULL);
+            if (extract7z(archive_path)) {
                 perror("snbox: extraction failed");
                 return errno;
             }
-            printf("extracted hdd\n");
-        } else {
-            if (downloadFile(g.hdd_url, "snbox.qcow2")) {
-                perror("snbox: download failed");
-                return errno;
-            }
-            printf("downloaded hdd\n");
+            // measure amount of seconds since "before", use ANSI code 32m for green
+            printf("\033[32m%lus\033[0m\n", time(NULL)-before);
         }
-        //run(g);
+
+        free(archive_path);
+        run(g, hdd_path);
     }
 }

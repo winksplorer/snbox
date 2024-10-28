@@ -3,8 +3,7 @@
 
 const char* getFilename(const char* url);
 const char* remove7zExt(const char* filename);
-const char* getUsername();
-const char* getCacheFolder();
-void createCacheFolder();
+const char* getUsername(void);
+void createCacheFolder(void);
 
 #endif

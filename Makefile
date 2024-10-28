@@ -1,5 +1,5 @@
-CC = clang
-CFLAGS = -O2 -Isrc -g
+CC := clang
+CFLAGS = -O2 -Isrc -g -Wall -Wextra -pedantic -Wno-newline-eof
 OUT = snbox
 CFILES = $(shell find src -type f -name '*.c')
 OBJECTS = $(CFILES:.c=.o)

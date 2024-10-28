@@ -3,7 +3,7 @@
 #include <curl/curl.h>
 #include <errno.h>
 
-// callback function to write the data received from curl to a file, used by curl
+/* Helper function for downloadFile */
 size_t writeData(void* ptr, size_t size, size_t nmemb, FILE* stream) {
     size_t written = fwrite(ptr, size, nmemb, stream);
     return written;
