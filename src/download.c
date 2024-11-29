@@ -1,7 +1,7 @@
-#include <download.h>
+#include "download.h"
+
 #include <stdlib.h>
 #include <curl/curl.h>
-#include <errno.h>
 
 /* Helper function for downloadFile */
 size_t writeData(void* ptr, size_t size, size_t nmemb, FILE* stream) {
