@@ -81,6 +81,10 @@ void run(Guest g, const char* hdd) {
         argv[13] = "-device";
         argv[14] = "AC97";
         argv[15] = NULL;
+    } else if (g.os == WIN2K) {
+	argv[11] = "-device";
+	argv[12] = "AC97";
+	argv[13] = NULL;
     }
     else argv[11] = NULL;
 
