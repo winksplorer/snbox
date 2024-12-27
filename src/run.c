@@ -20,7 +20,11 @@ void run(Guest g, const char* hdd) {
             vga = "vmware";
             break;
         case QXL:
+            #if __APPLE__ // No QXL on macOS, fallback to cirrus
+            vga = "cirrus";
+            #else // Literally anything else
             vga = "qxl";
+            #endif
             break;
         case VIRTIO:
             vga = "virtio";
@@ -59,13 +63,24 @@ void run(Guest g, const char* hdd) {
     argv[9] = "-snapshot";
 
     // accelerator
-    argv[10] = "-enable-kvm";
+    argv[10] = "-accel";
+
+    #if defined(__arm64__) || defined(__aarch64__)
+        // you cannot accel x86 qemu on arm.
+        argv[11] = "tcg";
+    #else // assume x86
+        #if __APPLE__ // macOS
+        argv[11] = "hvf";
+        #else // Literally anything else
+        argv[11] = "kvm";
+        #endif
+    #endif
     
     // OS-specific switches
     if (g.os == WINNT4) {
         /* Windows NT 4.0 quirks:
          * 1. Requires pentium3 cpu option
-         * 2. KVM doesn't work
+         * 2. Cannot be accelerated
          */
         argv[10] = "-cpu";
         argv[11] = "pentium3";
@@ -76,17 +91,20 @@ void run(Guest g, const char* hdd) {
          * 2. Even then, Ctrl+Alt+G'ing in QEMU breaks the mouse until you release
          * 3. AC97 is required for audio
          */
-        argv[11] = "-usbdevice";
-        argv[12] = "tablet";
-        argv[13] = "-device";
-        argv[14] = "AC97";
-        argv[15] = NULL;
+        argv[12] = "-usbdevice";
+        argv[13] = "tablet";
+        argv[14] = "-device";
+        argv[15] = "AC97";
+        argv[16] = NULL;
     } else if (g.os == WIN2K) {
-	argv[11] = "-device";
-	argv[12] = "AC97";
-	argv[13] = NULL;
+        /* Windows 2000 quirks:
+         * 1. AC97 is required for audio
+         */
+        argv[12] = "-device";
+        argv[13] = "AC97";
+        argv[14] = NULL;
     }
-    else argv[11] = NULL;
+    else argv[12] = NULL;
 
     printf("starting qemu\n");
     

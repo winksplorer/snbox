@@ -36,7 +36,11 @@ const char* getUsername(void) {
 /* Creates ~/.snbox if it doesn't exist */
 void createCacheFolder(void) {
     char* folder = malloc(100);
+    #if __APPLE__
+    snprintf(folder, 100, "/Users/%s/Library/Application Support/snbox", getUsername());
+    #else
     snprintf(folder, 100, "/home/%s/.snbox", getUsername());
+    #endif
 
     struct stat st = {0};
     if (stat(folder, &st) == -1) {

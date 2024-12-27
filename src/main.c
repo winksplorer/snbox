@@ -31,7 +31,11 @@ int main(int argc, char* argv[]) {
         // hdd_path is the path to the UNcompressed (and cached) hdd, such as /home/wink/.snbox/haiku.qcow2
 
         snprintf(archive_path, 50, "/tmp/%s", getFilename(g.hdd_url));
+        #if __APPLE__ // macOS
+        snprintf(hdd_path, 100, "/Users/%s/Library/Application Support/snbox/%s", getUsername(), remove7zExt(getFilename(g.hdd_url)));
+        #else // Literally anything else
         snprintf(hdd_path, 100, "/home/%s/.snbox/%s", getUsername(), remove7zExt(getFilename(g.hdd_url)));
+        #endif
 
         if (!access(archive_path, F_OK)) remove(archive_path);
         if (access(hdd_path, F_OK)) {
