@@ -33,7 +33,7 @@ void run(Guest g, const char* hdd) {
 
     snprintf(qemu_cmd, 20, "qemu-system-%s", g.amd64 ? "x86_64" : "i386");
 
-    char* argv[20];
+    char* argv[21];
 
     argv[0] = qemu_cmd;
 
@@ -95,14 +95,22 @@ void run(Guest g, const char* hdd) {
         argv[13] = "tablet";
         argv[14] = "-device";
         argv[15] = "AC97";
-        argv[16] = NULL;
+        argv[16] = "-netdev";
+        argv[17] = "user,id=lan";
+        argv[18] = "-device";
+        argv[19] = "rtl8139,netdev=lan";
+        argv[20] = NULL;
     } else if (g.os == WIN2K) {
         /* Windows 2000 quirks:
          * 1. AC97 is required for audio
          */
         argv[12] = "-device";
         argv[13] = "AC97";
-        argv[14] = NULL;
+        argv[14] = "-netdev";
+        argv[15] = "user,id=lan";
+        argv[16] = "-device";
+        argv[17] = "rtl8139,netdev=lan";
+        argv[18] = NULL;
     }
     else argv[12] = NULL;
 

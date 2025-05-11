@@ -4,36 +4,13 @@
 #include <archive.h>
 #include <archive_entry.h>
 
-/* Helper function for extract_7z. */
-int copyData(struct archive* ar, struct archive* aw) {
-    const void* buff;
-    size_t size;
-    la_int64_t offset;
-    int r;
-
-    while (1) {
-        r = archive_read_data_block(ar, &buff, &size, &offset);
-        if (r == ARCHIVE_EOF)
-            return ARCHIVE_OK;
-        if (r != ARCHIVE_OK)
-            return r;
-        r = archive_write_data_block(aw, buff, size, offset);
-        if (r != ARCHIVE_OK) {
-            fprintf(stderr, "snbox: extraction error: write failed: %s\n", archive_error_string(aw));
-            return r;
-        }
-    }
-}
-
-/* Extracts a 7zip archive to ~/.snbox. */
-int extract7z(const char *filename) {
-    struct archive_entry* entry;
-
+int extract7z(const char* filename) {
     struct archive* a = archive_read_new();
     struct archive* ext = archive_write_disk_new();
+    struct archive_entry* entry;
 
     archive_read_support_format_7zip(a);
-    archive_read_support_compression_all(a);
+    archive_read_support_filter_lzma(a);
     archive_write_disk_set_options(ext, ARCHIVE_EXTRACT_TIME);
 
     int r = archive_read_open_filename(a, filename, 10240);
@@ -42,26 +19,40 @@ int extract7z(const char *filename) {
         return r;
     }
 
-    while (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
-        char path[100];
+    if (archive_read_next_header(a, &entry) == ARCHIVE_OK) {
+        char path[256];
         #if __APPLE__
-        snprintf(path, 100, "/Users/%s/Library/Application Support/snbox/%s", getUsername(), archive_entry_pathname(entry));
+        snprintf(path, sizeof(path), "/Users/%s/Library/Application Support/snbox/%s", getUsername(), archive_entry_pathname(entry));
         #else
-        snprintf(path, 100, "/home/%s/.snbox/%s", getUsername(), archive_entry_pathname(entry));
+        snprintf(path, sizeof(path), "/home/%s/.snbox/%s", getUsername(), archive_entry_pathname(entry));
         #endif
         archive_entry_set_pathname(entry, path);
 
         r = archive_write_header(ext, entry);
-        if (r != ARCHIVE_OK) fprintf(stderr, "snbox: extraction error: header write failed: %s\n", archive_error_string(ext));
-        else {
-            copyData(a, ext);
-            archive_write_finish_entry(ext);
+        if (r != ARCHIVE_OK) {
+            fprintf(stderr, "snbox: extraction error: header write failed: %s\n", archive_error_string(ext));
+        } else {
+            const void* buff;
+            size_t size;
+            la_int64_t offset;
+
+            while (1) {
+                r = archive_read_data_block(a, &buff, &size, &offset);
+                if (r == ARCHIVE_EOF) break;
+                if (r != ARCHIVE_OK) return r;
+
+                r = archive_write_data_block(ext, buff, size, offset);
+                if (r != ARCHIVE_OK) {
+                    fprintf(stderr, "snbox: extraction error: write failed: %s\n", archive_error_string(ext));
+                    return r;
+                }
+            }
         }
     }
 
     archive_read_close(a);
     archive_read_free(a);
-    archive_read_close(ext);
-    archive_read_free(ext);
+    archive_write_close(ext);
+    archive_write_free(ext);
     return 0;
 }
