@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdbool.h>
+#include "common.h"
 
 /* 
  * Creates a guest structure from an OS name. 
@@ -45,49 +46,24 @@ Guest getGuest(const char* name) {
 
 /* Returns the OperatingSystem enum representation of an OS. */
 OperatingSystem getOS(const char* name) {
-    if (!strcmp(name, "dos5") ||
-        !strcmp(name, "dos") ||
-        !strcmp(name, "msdos") ||
-        !strcmp(name, "msdos5") ||
-        !strcmp(name, "ms-dos") ||
-        !strcmp(name, "ms-dos5")) return DOS5;
-
+    if (!anystrcmp(name, "dos5", "dos", "msdos", "msdos5", "ms-dos", "ms-dos5", NULL)) return DOS5;
     else if (!strcmp(name, "win3")) return WIN3;
-
-    else if (!strcmp(name, "winnt4") ||
-        !strcmp(name, "winnt") ||
-        !strcmp(name, "nt4") ||
-        !strcmp(name, "nt")) return WINNT4;
-
-    else if (!strcmp(name, "win2k") ||
-        !strcmp(name, "win2000") ||
-        !strcmp(name, "2k") ||
-        !strcmp(name, "2000")) return WIN2K;
-
-    else if (!strcmp(name, "winxp") ||
-        !strcmp(name, "xp")) return WINXP;
-
-    else if (!strcmp(name, "haikuos") || !strcmp(name, "haiku")) return HAIKU;
-    
+    else if (!anystrcmp(name, "winnt4", "winnt", "nt4", "nt", NULL)) return WINNT4;
+    else if (!anystrcmp(name, "win2k", "win2000", "2k", "2000", NULL)) return WIN2K;
+    else if (!anystrcmp(name, "winxp", "xp", NULL)) return WINXP;
+    else if (!anystrcmp(name, "haiku", "haikuos", NULL)) return HAIKU;
     else return NONE;
 }
 
 /* Returns the display name of an OperatingSystem. */
 const char* osName(OperatingSystem os) {
     switch (os) {
-        case DOS5:
-            return "Microsoft MS-DOS 5.00";
-        case WIN3:
-            return "Microsoft Windows 3.1";
-        case WINNT4:
-            return "Microsoft Windows NT 4.0 Workstation SP6";
-        case WIN2K:
-            return "Microsoft Windows 2000 Professional SP4";
-        case WINXP:
-            return "Microsoft Windows XP Professional SP3 x86";
-        case HAIKU:
-            return "Haiku OS r1beta5";
-        default:
-            return "?";
+        case DOS5: return "Microsoft MS-DOS 5.00";
+        case WIN3: return "Microsoft Windows 3.1";
+        case WINNT4: return "Microsoft Windows NT 4.0 Workstation SP6";
+        case WIN2K: return "Microsoft Windows 2000 Professional SP4";
+        case WINXP: return "Microsoft Windows XP Professional SP3 x86";
+        case HAIKU: return "Haiku OS r1beta5";
+        default: return "?";
     }
 }

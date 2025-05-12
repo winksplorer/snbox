@@ -9,6 +9,7 @@ size_t writeData(void* ptr, size_t size, size_t nmemb, FILE* stream) {
     return written;
 }
 
+/* Downloads a file. */
 int downloadFile(const char* url, const char* file_path) {
     CURL* curl = curl_easy_init();
     if (curl) {

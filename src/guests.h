@@ -4,6 +4,8 @@
 #include <stdbool.h>
 
 typedef enum OperatingSystem {
+    NONE,
+    
     DOS5,
     WIN3,
 
@@ -11,8 +13,7 @@ typedef enum OperatingSystem {
     WIN2K,
     WINXP,
 
-    HAIKU,
-    NONE
+    HAIKU
 } OperatingSystem;
 
 typedef enum QemuVga {

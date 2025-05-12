@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
 
     else if (argc == 2) {
         Guest g = getGuest(argv[1]);
-        if (g.os == NONE){
+        if (!g.os){
             perror("snbox: invalid guest");
             return errno;
         }
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
         snprintf(hdd_path, 100, "/home/%s/.snbox/%s", getUsername(), remove7zExt(getFilename(g.hdd_url)));
         #endif
 
-        if (!access(archive_path, F_OK)) remove(archive_path);
+        if (!access(archive_path, F_OK)) remove(archive_path); // Remove archive if it already exists
         if (access(hdd_path, F_OK)) {
             // Download VM HDD
             printf("downloading compressed hdd... ");
@@ -62,6 +62,8 @@ int main(int argc, char* argv[]) {
             }
             // measure amount of seconds since "before", use ANSI code 32m for green
             printf("\033[32m%lus\033[0m\n", time(NULL)-before);
+
+            remove(archive_path);
         }
 
         free(archive_path);

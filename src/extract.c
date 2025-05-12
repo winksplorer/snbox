@@ -4,6 +4,7 @@
 #include <archive.h>
 #include <archive_entry.h>
 
+/* Extracts a file. */
 int extract7z(const char* filename) {
     struct archive* a = archive_read_new();
     struct archive* ext = archive_write_disk_new();
@@ -29,9 +30,8 @@ int extract7z(const char* filename) {
         archive_entry_set_pathname(entry, path);
 
         r = archive_write_header(ext, entry);
-        if (r != ARCHIVE_OK) {
-            fprintf(stderr, "snbox: extraction error: header write failed: %s\n", archive_error_string(ext));
-        } else {
+        if (r != ARCHIVE_OK) fprintf(stderr, "snbox: extraction error: header write failed: %s\n", archive_error_string(ext));
+        else {
             const void* buff;
             size_t size;
             la_int64_t offset;
